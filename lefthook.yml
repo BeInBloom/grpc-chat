@@ -1,0 +1,45 @@
+# Lefthook configuration for grpc-chat
+# Docs: https://github.com/evilmartians/lefthook
+
+pre-commit:
+  parallel: true
+  commands:
+    fmt:
+      glob: "*.go"
+      run: goimports -w {staged_files}
+      stage_fixed: true
+
+    lint:
+      glob: "*.go"
+      run: golangci-lint run --new-from-rev=HEAD~1
+
+    buf-lint:
+      glob: "*.proto"
+      run: buf lint proto
+
+    buf-format:
+      glob: "*.proto"
+      run: buf format -w proto
+      stage_fixed: true
+
+pre-push:
+  commands:
+    test:
+      run: go test ./gen/go/... ./pkg/... ./services/auth/... ./services/chat/...
+
+    build:
+      run: go build ./gen/go/... ./pkg/... ./services/auth/... ./services/chat/...
+
+commit-msg:
+  commands:
+    conventional:
+      run: |
+        msg=$(cat {1})
+        if ! echo "$msg" | grep -qE '^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+'; then
+          echo "❌ Invalid commit message format!"
+          echo "   Expected: type(scope): message"
+          echo "   Examples: feat(auth): add JWT validation"
+          echo "             fix: resolve connection timeout"
+          echo "   Types: feat, fix, docs, style, refactor, test, chore"
+          exit 1
+        fi
