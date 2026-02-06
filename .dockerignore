@@ -1,0 +1,10 @@
+.git
+.gitignore
+.golangci.yml
+lefthook.yml
+README.md
+Makefile
+bin/
+*.md
+.env*
+docker-compose*.yml

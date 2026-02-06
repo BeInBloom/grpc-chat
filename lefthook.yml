@@ -11,7 +11,7 @@ pre-commit:
 
     lint:
       glob: "*.go"
-      run: golangci-lint run --new-from-rev=HEAD~1
+      run: golangci-lint run ./gen/go/... ./services/auth/... ./services/chat/... --new-from-rev=HEAD~1
 
     buf-lint:
       glob: "*.proto"

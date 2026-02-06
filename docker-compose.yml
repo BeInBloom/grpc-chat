@@ -1,0 +1,22 @@
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      - GRPC_PORT=50051
+    restart: unless-stopped
+
+  chat:
+    build:
+      context: .
+      dockerfile: services/chat/Dockerfile
+    ports:
+      - "50052:50052"
+    environment:
+      - GRPC_PORT=50052
+    depends_on:
+      - auth
+    restart: unless-stopped
