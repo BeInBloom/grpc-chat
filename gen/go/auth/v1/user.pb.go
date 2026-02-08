@@ -7,13 +7,13 @@
 package authv1
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -142,7 +142,7 @@ func (x *CreateRequest) GetRole() UserRole {
 
 type CreateResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -177,16 +177,16 @@ func (*CreateResponse) Descriptor() ([]byte, []int) {
 	return file_auth_v1_user_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateResponse) GetId() int64 {
+func (x *CreateResponse) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
 type GetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -221,16 +221,16 @@ func (*GetRequest) Descriptor() ([]byte, []int) {
 	return file_auth_v1_user_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetRequest) GetId() int64 {
+func (x *GetRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
 type GetResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	Role          UserRole               `protobuf:"varint,4,opt,name=role,proto3,enum=auth.v1.UserRole" json:"role,omitempty"`
@@ -270,11 +270,11 @@ func (*GetResponse) Descriptor() ([]byte, []int) {
 	return file_auth_v1_user_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetResponse) GetId() int64 {
+func (x *GetResponse) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
 func (x *GetResponse) GetName() string {
@@ -313,10 +313,10 @@ func (x *GetResponse) GetUpdatedAt() *timestamppb.Timestamp {
 }
 
 type UpdateRequest struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Id            int64                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Email         *wrapperspb.StringValue `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Email         *string                `protobuf:"bytes,3,opt,name=email,proto3,oneof" json:"email,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -351,25 +351,25 @@ func (*UpdateRequest) Descriptor() ([]byte, []int) {
 	return file_auth_v1_user_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateRequest) GetId() int64 {
+func (x *UpdateRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
-func (x *UpdateRequest) GetName() *wrapperspb.StringValue {
-	if x != nil {
-		return x.Name
+func (x *UpdateRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
-	return nil
+	return ""
 }
 
-func (x *UpdateRequest) GetEmail() *wrapperspb.StringValue {
-	if x != nil {
-		return x.Email
+func (x *UpdateRequest) GetEmail() string {
+	if x != nil && x.Email != nil {
+		return *x.Email
 	}
-	return nil
+	return ""
 }
 
 type UpdateResponse struct {
@@ -410,7 +410,7 @@ func (*UpdateResponse) Descriptor() ([]byte, []int) {
 
 type DeleteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -445,11 +445,11 @@ func (*DeleteRequest) Descriptor() ([]byte, []int) {
 	return file_auth_v1_user_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *DeleteRequest) GetId() int64 {
+func (x *DeleteRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
 type DeleteResponse struct {
@@ -492,33 +492,35 @@ var File_auth_v1_user_proto protoreflect.FileDescriptor
 
 const file_auth_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x12auth/v1/user.proto\x12\aauth.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"|\n" +
+	"\x12auth/v1/user.proto\x12\aauth.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"|\n" +
 	"\rCreateRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\x12%\n" +
 	"\x04role\x18\x04 \x01(\x0e2\x11.auth.v1.UserRoleR\x04role\" \n" +
 	"\x0eCreateResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\x1c\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x1c\n" +
 	"\n" +
 	"GetRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\xe4\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xe4\x01\n" +
 	"\vGetResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12%\n" +
 	"\x04role\x18\x04 \x01(\x0e2\x11.auth.v1.UserRoleR\x04role\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x85\x01\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"f\n" +
 	"\rUpdateRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x120\n" +
-	"\x04name\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x04name\x122\n" +
-	"\x05email\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueR\x05email\"\x10\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x19\n" +
+	"\x05email\x18\x03 \x01(\tH\x01R\x05email\x88\x01\x01B\a\n" +
+	"\x05_nameB\b\n" +
+	"\x06_email\"\x10\n" +
 	"\x0eUpdateResponse\"\x1f\n" +
 	"\rDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\x10\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x10\n" +
 	"\x0eDeleteResponse*N\n" +
 	"\bUserRole\x12\x19\n" +
 	"\x15USER_ROLE_UNSPECIFIED\x10\x00\x12\x12\n" +
@@ -545,38 +547,35 @@ func file_auth_v1_user_proto_rawDescGZIP() []byte {
 var file_auth_v1_user_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_auth_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_auth_v1_user_proto_goTypes = []any{
-	(UserRole)(0),                  // 0: auth.v1.UserRole
-	(*CreateRequest)(nil),          // 1: auth.v1.CreateRequest
-	(*CreateResponse)(nil),         // 2: auth.v1.CreateResponse
-	(*GetRequest)(nil),             // 3: auth.v1.GetRequest
-	(*GetResponse)(nil),            // 4: auth.v1.GetResponse
-	(*UpdateRequest)(nil),          // 5: auth.v1.UpdateRequest
-	(*UpdateResponse)(nil),         // 6: auth.v1.UpdateResponse
-	(*DeleteRequest)(nil),          // 7: auth.v1.DeleteRequest
-	(*DeleteResponse)(nil),         // 8: auth.v1.DeleteResponse
-	(*timestamppb.Timestamp)(nil),  // 9: google.protobuf.Timestamp
-	(*wrapperspb.StringValue)(nil), // 10: google.protobuf.StringValue
+	(UserRole)(0),                 // 0: auth.v1.UserRole
+	(*CreateRequest)(nil),         // 1: auth.v1.CreateRequest
+	(*CreateResponse)(nil),        // 2: auth.v1.CreateResponse
+	(*GetRequest)(nil),            // 3: auth.v1.GetRequest
+	(*GetResponse)(nil),           // 4: auth.v1.GetResponse
+	(*UpdateRequest)(nil),         // 5: auth.v1.UpdateRequest
+	(*UpdateResponse)(nil),        // 6: auth.v1.UpdateResponse
+	(*DeleteRequest)(nil),         // 7: auth.v1.DeleteRequest
+	(*DeleteResponse)(nil),        // 8: auth.v1.DeleteResponse
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
 }
 var file_auth_v1_user_proto_depIdxs = []int32{
-	0,  // 0: auth.v1.CreateRequest.role:type_name -> auth.v1.UserRole
-	0,  // 1: auth.v1.GetResponse.role:type_name -> auth.v1.UserRole
-	9,  // 2: auth.v1.GetResponse.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 3: auth.v1.GetResponse.updated_at:type_name -> google.protobuf.Timestamp
-	10, // 4: auth.v1.UpdateRequest.name:type_name -> google.protobuf.StringValue
-	10, // 5: auth.v1.UpdateRequest.email:type_name -> google.protobuf.StringValue
-	1,  // 6: auth.v1.UserAPIService.Create:input_type -> auth.v1.CreateRequest
-	3,  // 7: auth.v1.UserAPIService.Get:input_type -> auth.v1.GetRequest
-	5,  // 8: auth.v1.UserAPIService.Update:input_type -> auth.v1.UpdateRequest
-	7,  // 9: auth.v1.UserAPIService.Delete:input_type -> auth.v1.DeleteRequest
-	2,  // 10: auth.v1.UserAPIService.Create:output_type -> auth.v1.CreateResponse
-	4,  // 11: auth.v1.UserAPIService.Get:output_type -> auth.v1.GetResponse
-	6,  // 12: auth.v1.UserAPIService.Update:output_type -> auth.v1.UpdateResponse
-	8,  // 13: auth.v1.UserAPIService.Delete:output_type -> auth.v1.DeleteResponse
-	10, // [10:14] is the sub-list for method output_type
-	6,  // [6:10] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	0, // 0: auth.v1.CreateRequest.role:type_name -> auth.v1.UserRole
+	0, // 1: auth.v1.GetResponse.role:type_name -> auth.v1.UserRole
+	9, // 2: auth.v1.GetResponse.created_at:type_name -> google.protobuf.Timestamp
+	9, // 3: auth.v1.GetResponse.updated_at:type_name -> google.protobuf.Timestamp
+	1, // 4: auth.v1.UserAPIService.Create:input_type -> auth.v1.CreateRequest
+	3, // 5: auth.v1.UserAPIService.Get:input_type -> auth.v1.GetRequest
+	5, // 6: auth.v1.UserAPIService.Update:input_type -> auth.v1.UpdateRequest
+	7, // 7: auth.v1.UserAPIService.Delete:input_type -> auth.v1.DeleteRequest
+	2, // 8: auth.v1.UserAPIService.Create:output_type -> auth.v1.CreateResponse
+	4, // 9: auth.v1.UserAPIService.Get:output_type -> auth.v1.GetResponse
+	6, // 10: auth.v1.UserAPIService.Update:output_type -> auth.v1.UpdateResponse
+	8, // 11: auth.v1.UserAPIService.Delete:output_type -> auth.v1.DeleteResponse
+	8, // [8:12] is the sub-list for method output_type
+	4, // [4:8] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_auth_v1_user_proto_init() }
@@ -584,6 +583,7 @@ func file_auth_v1_user_proto_init() {
 	if File_auth_v1_user_proto != nil {
 		return
 	}
+	file_auth_v1_user_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

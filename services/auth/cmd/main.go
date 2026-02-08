@@ -9,6 +9,9 @@ import (
 
 	authv1 "github.com/BeInBloom/grpc-chat/gen/go/auth/v1"
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/handler"
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/repository"
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/services"
 )
 
 const grpcPort = ":50051"
@@ -20,7 +23,10 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	authv1.RegisterUserAPIServiceServer(grpcServer, handler.NewUserService())
+
+	userRepo := repository.New(models.UserRepositoryConfig{})
+	userService := services.New(userRepo)
+	authv1.RegisterUserAPIServiceServer(grpcServer, handler.New(userService))
 
 	reflection.Register(grpcServer)
 

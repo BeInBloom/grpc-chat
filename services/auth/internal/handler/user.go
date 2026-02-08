@@ -2,40 +2,76 @@ package handler
 
 import (
 	"context"
-	"log"
 
 	authv1 "github.com/BeInBloom/grpc-chat/gen/go/auth/v1"
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
 )
 
-type UserService struct {
+//go:generate mockgen -source=user.go -destination=mocks/mock_service.go -package=mocks
+
+type userService interface {
+	Create(ctx context.Context, user models.User) (string, error)
+	Get(ctx context.Context, id string) (models.User, error)
+	Update(ctx context.Context, user models.User) error
+	Delete(ctx context.Context, id string) error
+}
+
+type UserHandler struct {
 	authv1.UnimplementedUserAPIServiceServer
+	service userService
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func New(service userService) *UserHandler {
+	return &UserHandler{service: service}
 }
 
-func (s *UserService) Create(ctx context.Context, req *authv1.CreateRequest) (*authv1.CreateResponse, error) {
-	log.Printf("Create called: name=%s, email=%s", req.GetName(), req.GetEmail())
-	return &authv1.CreateResponse{Id: 1}, nil
+func (h *UserHandler) Create(ctx context.Context, req *authv1.CreateRequest) (*authv1.CreateResponse, error) {
+	id, err := h.service.Create(ctx, models.User{
+		Name:  req.Name,
+		Email: req.Email,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &authv1.CreateResponse{Id: id}, nil
 }
 
-func (s *UserService) Get(ctx context.Context, req *authv1.GetRequest) (*authv1.GetResponse, error) {
-	log.Printf("Get called: id=%d", req.GetId())
+func (h *UserHandler) Get(ctx context.Context, req *authv1.GetRequest) (*authv1.GetResponse, error) {
+	user, err := h.service.Get(ctx, req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
 	return &authv1.GetResponse{
-		Id:    req.GetId(),
-		Name:  "stub_user",
-		Email: "stub@example.com",
-		Role:  authv1.UserRole_USER_ROLE_USER,
+		Id:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
 	}, nil
 }
 
-func (s *UserService) Update(ctx context.Context, req *authv1.UpdateRequest) (*authv1.UpdateResponse, error) {
-	log.Printf("Update called: id=%d", req.GetId())
+func (h *UserHandler) Update(ctx context.Context, req *authv1.UpdateRequest) (*authv1.UpdateResponse, error) {
+	user := models.User{
+		ID: req.GetId(),
+	}
+	if req.Name != nil {
+		user.Name = *req.Name
+	}
+	if req.Email != nil {
+		user.Email = *req.Email
+	}
+
+	if err := h.service.Update(ctx, user); err != nil {
+		return nil, err
+	}
+
 	return &authv1.UpdateResponse{}, nil
 }
 
-func (s *UserService) Delete(ctx context.Context, req *authv1.DeleteRequest) (*authv1.DeleteResponse, error) {
-	log.Printf("Delete called: id=%d", req.GetId())
+func (h *UserHandler) Delete(ctx context.Context, req *authv1.DeleteRequest) (*authv1.DeleteResponse, error) {
+	if err := h.service.Delete(ctx, req.GetId()); err != nil {
+		return nil, err
+	}
+
 	return &authv1.DeleteResponse{}, nil
 }

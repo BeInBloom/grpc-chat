@@ -14,7 +14,7 @@ export GOBIN := $(LOCAL_BIN)
 OS := $(strip $(shell uname -s))
 ARCH := $(strip $(shell uname -m))
 
-.PHONY: all bin-deps generate lint clean
+.PHONY: all bin-deps generate lint clean test test-auth test-chat
 
 all: generate
 
@@ -37,3 +37,12 @@ generate: bin-deps lint
 clean:
 	rm -rf $(LOCAL_BIN)
 	rm -rf $(SERVER_OUT_DIR)/*.go
+
+test: test-auth test-chat
+
+test-auth:
+	go -C services/auth test ./... -v
+
+test-chat:
+	go -C services/chat test ./... -v
+
