@@ -6,9 +6,10 @@ import (
 	"log/slog"
 	"net"
 
-	authv1 "github.com/BeInBloom/grpc-chat/gen/go/auth/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	authv1 "github.com/BeInBloom/grpc-chat/gen/go/auth/v1"
 )
 
 type App struct {

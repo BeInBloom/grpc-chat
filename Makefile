@@ -27,8 +27,17 @@ $(BUF):
 	@curl -sSL "https://github.com/bufbuild/buf/releases/download/$(BUF_VERSION)/buf-$(OS)-$(ARCH)" -o $(BUF)
 	@chmod +x $(BUF)
 
-lint: bin-deps
+lint: bin-deps lint-go
 	@$(BUF) lint proto
+
+lint-go:
+	@golangci-lint run ./gen/go/... ./services/auth/... ./services/chat/...
+
+lint-fix:
+	@golangci-lint run ./gen/go/... ./services/auth/... ./services/chat/... --fix
+
+fmt:
+	@goimports -w services/auth services/chat pkg gen/go
 
 generate: bin-deps lint
 	@mkdir -p $(SERVER_OUT_DIR)

@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
 	"github.com/ilyakaznacheev/cleanenv"
+
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
 )
 
 func New() models.Config {
