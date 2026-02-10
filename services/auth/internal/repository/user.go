@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -17,7 +18,6 @@ type UserRepository struct {
 func New(config models.UserRepositoryConfig) *UserRepository {
 	return &UserRepository{
 		users: make(map[string]*models.User),
-		mu:    sync.RWMutex{},
 	}
 }
 
@@ -26,6 +26,9 @@ func (r *UserRepository) Create(ctx context.Context, user models.User) (string, 
 	defer r.mu.Unlock()
 
 	user.ID = uuid.New().String()
+	now := time.Now()
+	user.CreatedAt = now
+	user.UpdatedAt = now
 
 	r.users[user.ID] = &user
 
@@ -53,6 +56,7 @@ func (r *UserRepository) Update(ctx context.Context, user models.User) error {
 		return ErrUserNotFound
 	}
 
+	user.UpdatedAt = time.Now()
 	r.users[user.ID] = &user
 
 	return nil

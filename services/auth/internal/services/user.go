@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-playground/validator/v10"
 
@@ -40,11 +41,23 @@ func (s *UserService) Get(ctx context.Context, id string) (models.User, error) {
 }
 
 func (s *UserService) Update(ctx context.Context, user models.User) error {
-	if err := validate.Struct(user); err != nil {
+	existing, err := s.repo.Get(ctx, user.ID)
+	if err != nil {
+		return fmt.Errorf("get user for update: %w", err)
+	}
+
+	if user.Name != "" {
+		existing.Name = user.Name
+	}
+	if user.Email != "" {
+		existing.Email = user.Email
+	}
+
+	if err := validate.Struct(existing); err != nil {
 		return err
 	}
 
-	return s.repo.Update(ctx, user)
+	return s.repo.Update(ctx, existing)
 }
 
 func (s *UserService) Delete(ctx context.Context, id string) error {

@@ -21,8 +21,9 @@ func TestUserService_Create(t *testing.T) {
 
 	ctx := context.Background()
 	user := models.User{
-		Name:  "test",
-		Email: "test@example.com",
+		Name:     "test",
+		Email:    "test@example.com",
+		Password: "secret123",
 	}
 
 	mockRepo.EXPECT().
@@ -45,14 +46,23 @@ func TestUserService_CreateValidationError(t *testing.T) {
 	ctx := context.Background()
 
 	_, err := service.Create(ctx, models.User{
-		Name:  "",
-		Email: "test@example.com",
+		Name:     "",
+		Email:    "test@example.com",
+		Password: "secret123",
 	})
 	assert.Error(t, err)
 
 	_, err = service.Create(ctx, models.User{
-		Name:  "test",
-		Email: "",
+		Name:     "test",
+		Email:    "",
+		Password: "secret123",
+	})
+	assert.Error(t, err)
+
+	_, err = service.Create(ctx, models.User{
+		Name:     "test",
+		Email:    "test@example.com",
+		Password: "",
 	})
 	assert.Error(t, err)
 }
@@ -66,9 +76,10 @@ func TestUserService_Get(t *testing.T) {
 
 	ctx := context.Background()
 	expectedUser := models.User{
-		ID:    "uuid-123",
-		Name:  "test",
-		Email: "test@example.com",
+		ID:       "uuid-123",
+		Name:     "test",
+		Email:    "test@example.com",
+		Password: "secret123",
 	}
 
 	mockRepo.EXPECT().
@@ -107,22 +118,37 @@ func TestUserService_Update(t *testing.T) {
 	service := New(mockRepo)
 
 	ctx := context.Background()
-	user := models.User{
-		ID:    "uuid-123",
-		Name:  "updated",
-		Email: "updated@example.com",
+
+	existingUser := models.User{
+		ID:       "uuid-123",
+		Name:     "old",
+		Email:    "old@example.com",
+		Password: "secret123",
 	}
 
 	mockRepo.EXPECT().
-		Update(ctx, user).
+		Get(ctx, "uuid-123").
+		Return(existingUser, nil)
+
+	mockRepo.EXPECT().
+		Update(ctx, models.User{
+			ID:       "uuid-123",
+			Name:     "updated",
+			Email:    "updated@example.com",
+			Password: "secret123",
+		}).
 		Return(nil)
 
-	err := service.Update(ctx, user)
+	err := service.Update(ctx, models.User{
+		ID:    "uuid-123",
+		Name:  "updated",
+		Email: "updated@example.com",
+	})
 
 	require.NoError(t, err)
 }
 
-func TestUserService_UpdateValidationError(t *testing.T) {
+func TestUserService_UpdatePartial(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -131,10 +157,51 @@ func TestUserService_UpdateValidationError(t *testing.T) {
 
 	ctx := context.Background()
 
+	existingUser := models.User{
+		ID:       "uuid-123",
+		Name:     "old",
+		Email:    "old@example.com",
+		Password: "secret123",
+	}
+
+	mockRepo.EXPECT().
+		Get(ctx, "uuid-123").
+		Return(existingUser, nil)
+
+	mockRepo.EXPECT().
+		Update(ctx, models.User{
+			ID:       "uuid-123",
+			Name:     "updated",
+			Email:    "old@example.com",
+			Password: "secret123",
+		}).
+		Return(nil)
+
 	err := service.Update(ctx, models.User{
-		ID:    "uuid-123",
-		Name:  "",
-		Email: "test@example.com",
+		ID:   "uuid-123",
+		Name: "updated",
+	})
+
+	require.NoError(t, err)
+}
+
+func TestUserService_UpdateNotFound(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mocks.NewMockuserRepository(ctrl)
+	service := New(mockRepo)
+
+	ctx := context.Background()
+
+	mockRepo.EXPECT().
+		Get(ctx, "non-existent").
+		Return(models.User{}, assert.AnError)
+
+	err := service.Update(ctx, models.User{
+		ID:    "non-existent",
+		Name:  "updated",
+		Email: "updated@example.com",
 	})
 
 	assert.Error(t, err)

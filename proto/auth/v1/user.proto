@@ -4,7 +4,7 @@ package auth.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/yourname/secure-chat/gen/go/auth/v1;authv1";
+option go_package = "github.com/BeInBloom/grpc-chat/gen/go/auth/v1;authv1";
 
 service UserAPIService {
   rpc Create(CreateRequest) returns (CreateResponse);

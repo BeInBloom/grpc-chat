@@ -1,37 +1,28 @@
 package main
 
 import (
-	"log"
-	"net"
+	"context"
+	"log/slog"
+	"os/signal"
+	"syscall"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-
-	authv1 "github.com/BeInBloom/grpc-chat/gen/go/auth/v1"
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/handler"
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/repository"
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/services"
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/config"
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/container"
 )
 
-const grpcPort = ":50051"
-
 func main() {
-	lis, err := net.Listen("tcp", grpcPort)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
+	ctx, stop := signal.NotifyContext(
+		context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	grpcServer := grpc.NewServer()
+	cfg := config.New()
+	c := container.New(cfg)
+	log := c.Logger()
 
-	userRepo := repository.New(models.UserRepositoryConfig{})
-	userService := services.New(userRepo)
-	authv1.RegisterUserAPIServiceServer(grpcServer, handler.New(userService))
+	log.Info("starting auth app...")
 
-	reflection.Register(grpcServer)
-
-	log.Printf("auth service listening on %s", grpcPort)
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	a := c.App()
+	if err := a.Run(ctx); err != nil {
+		log.Error("runtime error", slog.String("error", err.Error()))
 	}
 }

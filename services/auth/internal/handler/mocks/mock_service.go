@@ -13,9 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "go.uber.org/mock/gomock"
-
 	models "github.com/BeInBloom/grpc-chat/services/auth/internal/models"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockuserService is a mock of userService interface.
