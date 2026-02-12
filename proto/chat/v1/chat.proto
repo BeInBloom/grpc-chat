@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package chat.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/BeInBloom/grpc-chat/gen/go/chat/v1;chatv1";
+
+service ChatService {
+  rpc Connect(ConnectRequest) returns (stream ConnectResponse);
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
+}
+
+message ConnectRequest {
+  string chat_id = 1;
+  string last_event_id = 2;
+}
+
+message SendMessageRequest {
+  string chat_id = 1;
+  string indempotence_key = 2;
+}
+
+message SendMessageResponse {
+  string message_id = 1;
+  google.protobuf.Timestamp created_at = 2;
+}
+
+message GetHistoryRequest {
+  repeated Message messages = 1;
+  string next_cursor = 2;
+}
+
+message GetHistoryResponse {
+  repeated Message messages = 1;
+  string next_cursor = 2;
+}
+
+message ConnectResponse {
+  string id = 1;
+
+  oneof payload {
+    MessageNew message_new = 3;
+    MessageUpdated message_updated = 4;
+    MessageDeleted message_deleted = 5;
+    TypingIndicator typing = 6;
+    ReadReceipt read_receipt = 7;
+    SystemNotification system = 8;
+  }
+}
+
+message MessageNew {
+  Message message = 1;
+}
+
+message MessageUpdated {
+  string message_id = 1;
+  string chat_id = 2;
+  MessageContent new_content = 3;
+  google.protobuf.Timestamp updated_at = 4;
+}
+
+message MessageDeleted {
+  string message_id = 1;
+  string chat_id = 2;
+}
+
+message TypingIndicator {
+  string chat_id = 1;
+  User user = 2;
+  bool is_typing = 3;
+}
+
+message ReadReceipt {
+  string chat_id = 1;
+  string user_id = 2;
+  string message_id = 3;
+}
+
+message SystemNotification {
+  string text = 1;
+  string level = 2;
+}
+
+message Message {
+  string id = 1;
+  string chat_id = 2;
+  User sender = 3;
+
+  MessageContent content = 4;
+
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message MessageContent {
+  oneof type {
+    string text = 1;
+    //еще какое-то говно
+  }
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+}
