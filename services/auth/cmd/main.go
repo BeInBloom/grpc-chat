@@ -15,8 +15,8 @@ func main() {
 		context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	cfg := config.New()
-	c := container.New(cfg)
+	config := config.New()
+	c := container.New(config)
 	log := c.Logger()
 
 	log.Info("starting auth app...")
