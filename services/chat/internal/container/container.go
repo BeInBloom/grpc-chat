@@ -3,9 +3,9 @@ package container
 import (
 	"log/slog"
 
+	"github.com/BeInBloom/grpc-chat/pkg/logger"
 	"github.com/BeInBloom/grpc-chat/services/chat/internal/app"
 	"github.com/BeInBloom/grpc-chat/services/chat/internal/config"
-	"github.com/BeInBloom/grpc-chat/services/chat/internal/logger"
 )
 
 type container struct {
@@ -14,9 +14,9 @@ type container struct {
 	config config.Config
 }
 
-func New(config config.Config) *container {
+func New(cfg config.Config) *container {
 	return &container{
-		config: config,
+		config: cfg,
 	}
 }
 
@@ -30,7 +30,7 @@ func (c *container) App() *app.App {
 
 func (c *container) Logger() *slog.Logger {
 	if c.logger == nil {
-		c.logger = logger.New()
+		c.logger = logger.New(c.config.Logger)
 	}
 
 	return c.logger

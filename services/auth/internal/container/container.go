@@ -3,16 +3,16 @@ package container
 import (
 	"log/slog"
 
+	"github.com/BeInBloom/grpc-chat/pkg/logger"
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/app"
+	"github.com/BeInBloom/grpc-chat/services/auth/internal/config"
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/handler"
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/logger"
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/repository"
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/services"
 )
 
 type container struct {
-	config      models.Config
+	config      config.Config
 	userService *services.UserService
 	userRepo    *repository.UserRepository
 	logger      *slog.Logger
@@ -20,8 +20,8 @@ type container struct {
 	app         *app.App
 }
 
-func New(config models.Config) *container {
-	return &container{config: config}
+func New(cfg config.Config) *container {
+	return &container{config: cfg}
 }
 
 func (c *container) App() *app.App {
@@ -50,7 +50,7 @@ func (c *container) UserService() *services.UserService {
 
 func (c *container) Logger() *slog.Logger {
 	if c.logger == nil {
-		c.logger = logger.New(c.config.LoggerConfig)
+		c.logger = logger.New(c.config.Logger)
 	}
 
 	return c.logger
@@ -58,12 +58,12 @@ func (c *container) Logger() *slog.Logger {
 
 func (c *container) UserRepo() *repository.UserRepository {
 	if c.userRepo == nil {
-		c.userRepo = repository.New(c.Config().UserRepository)
+		c.userRepo = repository.New()
 	}
 
 	return c.userRepo
 }
 
-func (c *container) Config() models.Config {
+func (c *container) Config() config.Config {
 	return c.config
 }

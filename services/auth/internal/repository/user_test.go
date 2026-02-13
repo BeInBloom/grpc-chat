@@ -12,7 +12,7 @@ import (
 )
 
 func newTestRepo() *UserRepository {
-	return New(models.UserRepositoryConfig{})
+	return New()
 }
 
 func TestUserRepository_Create(t *testing.T) {
@@ -26,8 +26,7 @@ func TestUserRepository_Create(t *testing.T) {
 	})
 
 	require.NoError(t, err)
-	_, err = uuid.Parse(userID)
-	assert.NoError(t, err, "expected valid UUID")
+	assert.NotEqual(t, uuid.Nil, userID, "expected valid UUID")
 
 	user, err := repo.Get(ctx, userID)
 	require.NoError(t, err)
@@ -59,7 +58,7 @@ func TestUserRepository_GetNotFound(t *testing.T) {
 	repo := newTestRepo()
 	ctx := context.Background()
 
-	_, err := repo.Get(ctx, "non-existent-id")
+	_, err := repo.Get(ctx, uuid.New())
 
 	assert.ErrorIs(t, err, ErrUserNotFound)
 }
@@ -94,7 +93,7 @@ func TestUserRepository_UpdateNotFound(t *testing.T) {
 	ctx := context.Background()
 
 	err := repo.Update(ctx, models.User{
-		ID:       "non-existent-id",
+		ID:       uuid.New(),
 		Name:     "new",
 		Email:    "new@example.com",
 		Password: "secret123",
@@ -125,7 +124,7 @@ func TestUserRepository_DeleteNotFound(t *testing.T) {
 	repo := newTestRepo()
 	ctx := context.Background()
 
-	err := repo.Delete(ctx, "non-existent-id")
+	err := repo.Delete(ctx, uuid.New())
 
 	assert.ErrorIs(t, err, ErrUserNotFound)
 }

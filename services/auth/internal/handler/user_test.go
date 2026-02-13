@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -16,6 +17,8 @@ import (
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/repository"
 )
+
+var testUUID = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
 
 func TestUserHandler_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -39,12 +42,12 @@ func TestUserHandler_Create(t *testing.T) {
 			Password: req.Password,
 			Role:     int32(req.Role),
 		}).
-		Return("uuid-123", nil)
+		Return(testUUID, nil)
 
 	resp, err := handler.Create(ctx, req)
 
 	require.NoError(t, err)
-	assert.Equal(t, "uuid-123", resp.GetId())
+	assert.Equal(t, testUUID.String(), resp.GetId())
 }
 
 func TestUserHandler_CreateError(t *testing.T) {
@@ -63,7 +66,7 @@ func TestUserHandler_CreateError(t *testing.T) {
 
 	mockService.EXPECT().
 		Create(ctx, gomock.Any()).
-		Return("", assert.AnError)
+		Return(uuid.Nil, assert.AnError)
 
 	resp, err := handler.Create(ctx, req)
 
@@ -82,12 +85,12 @@ func TestUserHandler_Get(t *testing.T) {
 	handler := New(mockService)
 
 	ctx := context.Background()
-	req := &authv1.GetRequest{Id: "uuid-123"}
+	req := &authv1.GetRequest{Id: testUUID.String()}
 
 	mockService.EXPECT().
-		Get(ctx, "uuid-123").
+		Get(ctx, testUUID).
 		Return(models.User{
-			ID:    "uuid-123",
+			ID:    testUUID,
 			Name:  "test",
 			Email: "test@example.com",
 			Role:  int32(authv1.UserRole_USER_ROLE_ADMIN),
@@ -96,10 +99,28 @@ func TestUserHandler_Get(t *testing.T) {
 	resp, err := handler.Get(ctx, req)
 
 	require.NoError(t, err)
-	assert.Equal(t, "uuid-123", resp.GetId())
+	assert.Equal(t, testUUID.String(), resp.GetId())
 	assert.Equal(t, "test", resp.GetName())
 	assert.Equal(t, "test@example.com", resp.GetEmail())
 	assert.Equal(t, authv1.UserRole_USER_ROLE_ADMIN, resp.GetRole())
+}
+
+func TestUserHandler_GetInvalidID(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := mocks.NewMockuserService(ctrl)
+	handler := New(mockService)
+
+	ctx := context.Background()
+	req := &authv1.GetRequest{Id: "not-a-uuid"}
+
+	resp, err := handler.Get(ctx, req)
+
+	assert.Nil(t, resp)
+	st, ok := status.FromError(err)
+	require.True(t, ok)
+	assert.Equal(t, codes.InvalidArgument, st.Code())
 }
 
 func TestUserHandler_GetNotFound(t *testing.T) {
@@ -110,10 +131,11 @@ func TestUserHandler_GetNotFound(t *testing.T) {
 	handler := New(mockService)
 
 	ctx := context.Background()
-	req := &authv1.GetRequest{Id: "non-existent"}
+	nonExistent := uuid.MustParse("00000000-0000-0000-0000-000000000001")
+	req := &authv1.GetRequest{Id: nonExistent.String()}
 
 	mockService.EXPECT().
-		Get(ctx, "non-existent").
+		Get(ctx, nonExistent).
 		Return(models.User{}, repository.ErrUserNotFound)
 
 	resp, err := handler.Get(ctx, req)
@@ -134,14 +156,14 @@ func TestUserHandler_Update(t *testing.T) {
 
 	ctx := context.Background()
 	req := &authv1.UpdateRequest{
-		Id:    "uuid-123",
+		Id:    testUUID.String(),
 		Name:  proto.String("updated"),
 		Email: proto.String("updated@example.com"),
 	}
 
 	mockService.EXPECT().
 		Update(ctx, models.User{
-			ID:    "uuid-123",
+			ID:    testUUID,
 			Name:  "updated",
 			Email: "updated@example.com",
 		}).
@@ -161,8 +183,9 @@ func TestUserHandler_UpdateNotFound(t *testing.T) {
 	handler := New(mockService)
 
 	ctx := context.Background()
+	nonExistent := uuid.MustParse("00000000-0000-0000-0000-000000000001")
 	req := &authv1.UpdateRequest{
-		Id:   "non-existent",
+		Id:   nonExistent.String(),
 		Name: proto.String("updated"),
 	}
 
@@ -186,10 +209,10 @@ func TestUserHandler_Delete(t *testing.T) {
 	handler := New(mockService)
 
 	ctx := context.Background()
-	req := &authv1.DeleteRequest{Id: "uuid-123"}
+	req := &authv1.DeleteRequest{Id: testUUID.String()}
 
 	mockService.EXPECT().
-		Delete(ctx, "uuid-123").
+		Delete(ctx, testUUID).
 		Return(nil)
 
 	resp, err := handler.Delete(ctx, req)
@@ -206,10 +229,11 @@ func TestUserHandler_DeleteNotFound(t *testing.T) {
 	handler := New(mockService)
 
 	ctx := context.Background()
-	req := &authv1.DeleteRequest{Id: "non-existent"}
+	nonExistent := uuid.MustParse("00000000-0000-0000-0000-000000000001")
+	req := &authv1.DeleteRequest{Id: nonExistent.String()}
 
 	mockService.EXPECT().
-		Delete(ctx, "non-existent").
+		Delete(ctx, nonExistent).
 		Return(repository.ErrUserNotFound)
 
 	resp, err := handler.Delete(ctx, req)

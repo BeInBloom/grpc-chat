@@ -1,10 +1,14 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type (
 	User struct {
-		ID        string    `validate:"-"`
+		ID        uuid.UUID `validate:"-"`
 		Name      string    `validate:"required"`
 		Email     string    `validate:"required,email"`
 		Password  string    `validate:"required"`

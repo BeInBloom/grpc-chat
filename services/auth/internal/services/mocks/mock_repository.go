@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	models "github.com/BeInBloom/grpc-chat/services/auth/internal/models"
+	uuid "github.com/google/uuid"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -42,10 +43,10 @@ func (m *MockuserRepository) EXPECT() *MockuserRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockuserRepository) Create(ctx context.Context, user models.User) (string, error) {
+func (m *MockuserRepository) Create(ctx context.Context, user models.User) (uuid.UUID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, user)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(uuid.UUID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -57,7 +58,7 @@ func (mr *MockuserRepositoryMockRecorder) Create(ctx, user any) *gomock.Call {
 }
 
 // Delete mocks base method.
-func (m *MockuserRepository) Delete(ctx context.Context, id string) error {
+func (m *MockuserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -71,18 +72,18 @@ func (mr *MockuserRepositoryMockRecorder) Delete(ctx, id any) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockuserRepository) Get(ctx context.Context, uuid string) (models.User, error) {
+func (m *MockuserRepository) Get(ctx context.Context, id uuid.UUID) (models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", ctx, uuid)
+	ret := m.ctrl.Call(m, "Get", ctx, id)
 	ret0, _ := ret[0].(models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockuserRepositoryMockRecorder) Get(ctx, uuid any) *gomock.Call {
+func (mr *MockuserRepositoryMockRecorder) Get(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockuserRepository)(nil).Get), ctx, uuid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockuserRepository)(nil).Get), ctx, id)
 }
 
 // Update mocks base method.

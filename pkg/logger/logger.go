@@ -4,11 +4,18 @@ import (
 	"log/slog"
 	"os"
 	"strings"
-
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
 )
 
-func New(config models.LoggerConfig) *slog.Logger {
+type Config struct {
+	Env     string `yaml:"env" env:"ENV" env-default:"local"`
+	Service string `yaml:"service" env:"SERVICE_NAME" env-default:"my-app"`
+	Logger  struct {
+		Level     string `yaml:"level" env:"LOG_LEVEL" env-default:"info"`
+		AddSource bool   `yaml:"add_source" env:"LOG_ADD_SOURCE" env-default:"false"`
+	}
+}
+
+func New(config Config) *slog.Logger {
 	var handler slog.Handler
 
 	var level slog.Level

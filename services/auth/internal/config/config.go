@@ -6,17 +6,22 @@ import (
 
 	"github.com/ilyakaznacheev/cleanenv"
 
-	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
+	"github.com/BeInBloom/grpc-chat/pkg/logger"
 )
 
-func New() models.Config {
+type Config struct {
+	Addr   string        `yaml:"addr" env:"addr" env-default:"localhost:50051"`
+	Logger logger.Config `yaml:"logger"`
+}
+
+func New() Config {
 	configPath := ".env"
 
 	if path := os.Getenv("CONFIG_PATH"); path != "" {
 		configPath = path
 	}
 
-	var config models.Config
+	var config Config
 
 	if _, err := os.Stat(configPath); err == nil {
 		if err := cleanenv.ReadConfig(configPath, &config); err != nil {
