@@ -10,33 +10,14 @@ service ChatService {
   rpc Connect(ConnectRequest) returns (stream ConnectResponse);
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
   rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
+  rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
+  rpc ListChats(ListChatsRequest) returns (ListChatsResponse);
 }
+
+// --- Connect ---
 
 message ConnectRequest {
-  string chat_id = 1;
-  string last_event_id = 2;
-}
-
-message SendMessageRequest {
-  string chat_id = 1;
-  string idempotency_key = 2;
-  MessageContent content = 3;
-}
-
-message SendMessageResponse {
-  string message_id = 1;
-  google.protobuf.Timestamp created_at = 2;
-}
-
-message GetHistoryRequest {
-  string chat_id = 1;
-  int32 page_size = 2;
-  string cursor = 3;
-}
-
-message GetHistoryResponse {
-  repeated Message messages = 1;
-  string next_cursor = 2;
+  string last_event_id = 1;
 }
 
 message ConnectResponse {
@@ -51,6 +32,74 @@ message ConnectResponse {
     SystemNotification system = 8;
   }
 }
+
+// --- SendMessage ---
+
+message SendMessageRequest {
+  string chat_id = 1;
+  string idempotency_key = 2;
+  MessageContent content = 3;
+}
+
+message SendMessageResponse {
+  string message_id = 1;
+  google.protobuf.Timestamp created_at = 2;
+}
+
+// --- GetHistory ---
+
+message GetHistoryRequest {
+  string chat_id = 1;
+  int32 page_size = 2;
+  string cursor = 3;
+}
+
+message GetHistoryResponse {
+  repeated Message messages = 1;
+  string next_cursor = 2;
+}
+
+// --- CreateChat ---
+
+enum ChatType {
+  CHAT_TYPE_UNSPECIFIED = 0;
+  CHAT_TYPE_DIRECT = 1;
+  CHAT_TYPE_GROUP = 2;
+}
+
+message CreateChatRequest {
+  string name = 1;
+  ChatType type = 2;
+  repeated string member_ids = 3;
+}
+
+message CreateChatResponse {
+  string chat_id = 1;
+  google.protobuf.Timestamp created_at = 2;
+}
+
+// --- ListChats ---
+
+message ListChatsRequest {
+  int32 page_size = 1;
+  string cursor = 2;
+}
+
+message ListChatsResponse {
+  repeated ChatPreview chats = 1;
+  string next_cursor = 2;
+}
+
+message ChatPreview {
+  string id = 1;
+  string name = 2;
+  ChatType type = 3;
+  Message last_message = 4;
+  int32 unread_count = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+// --- Events ---
 
 message MessageNew {
   Message message = 1;
@@ -92,6 +141,8 @@ message SystemNotification {
   SystemNotificationLevel level = 2;
 }
 
+// --- Core types ---
+
 message Message {
   string id = 1;
   string chat_id = 2;
@@ -118,6 +169,20 @@ message MessageContent {
 
 message TextContent {
   bytes ciphertext = 1;
+}
+
+enum MemberRole {
+  MEMBER_ROLE_UNSPECIFIED = 0;
+  MEMBER_ROLE_MEMBER = 1;
+  MEMBER_ROLE_ADMIN = 2;
+  MEMBER_ROLE_OWNER = 3;
+}
+
+message ChatMember {
+  string user_id = 1;
+  string chat_id = 2;
+  MemberRole role = 3;
+  google.protobuf.Timestamp joined_at = 4;
 }
 
 message User {
