@@ -3,8 +3,9 @@ package chatservice
 import (
 	"context"
 
-	"github.com/BeInBloom/grpc-chat/services/chat/internal/models"
 	"github.com/google/uuid"
+
+	"github.com/BeInBloom/grpc-chat/services/chat/internal/models"
 )
 
 const (

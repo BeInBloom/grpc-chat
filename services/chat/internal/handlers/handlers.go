@@ -3,12 +3,13 @@ package handlers
 import (
 	"context"
 
-	chatv1 "github.com/BeInBloom/grpc-chat/gen/go/chat/v1"
-	"github.com/BeInBloom/grpc-chat/services/chat/internal/interceptors"
-	"github.com/BeInBloom/grpc-chat/services/chat/internal/models"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	chatv1 "github.com/BeInBloom/grpc-chat/gen/go/chat/v1"
+	"github.com/BeInBloom/grpc-chat/services/chat/internal/interceptors"
+	"github.com/BeInBloom/grpc-chat/services/chat/internal/models"
 )
 
 type chatService interface {
