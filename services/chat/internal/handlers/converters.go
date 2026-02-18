@@ -105,3 +105,30 @@ func toProtoMessages(messages []models.Message) []*chatv1.Message {
 
 	return result
 }
+
+func toProtoEvent(e models.Event) *chatv1.ConnectResponse {
+	resp := &chatv1.ConnectResponse{
+		Id: e.ID.String(),
+	}
+
+	switch e.Type {
+	case models.EventTypeMessageNew:
+		msg, ok := e.Payload.(models.Message)
+		if ok {
+			resp.Payload = &chatv1.ConnectResponse_MessageNew{
+				MessageNew: &chatv1.MessageNew{
+					Message: toProtoMessage(msg),
+				},
+			}
+		}
+	}
+
+	return resp
+}
+
+func toConnectRequest(userUI uuid.UUID, lastEventID uuid.UUID) models.SubscribeRequest {
+	return models.SubscribeRequest{
+		UserID:      userUI,
+		LastEventID: lastEventID,
+	}
+}

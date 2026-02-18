@@ -11,13 +11,14 @@ service ChatService {
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
   rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
   rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
+  rpc GetChat(GetChatRequest) returns (GetChatResponse);
   rpc ListChats(ListChatsRequest) returns (ListChatsResponse);
 }
 
 // --- Connect ---
 
 message ConnectRequest {
-  string last_event_id = 1;
+  optional string last_event_id = 1;
 }
 
 message ConnectResponse {
@@ -74,11 +75,16 @@ message CreateChatRequest {
 }
 
 message CreateChatResponse {
-  string chat_id = 1;
-  google.protobuf.Timestamp created_at = 2;
+  Chat chat = 1;
 }
 
-// --- ListChats ---
+message GetChatRequest {
+  string chat_id = 1;
+}
+
+message GetChatResponse {
+  Chat chat = 1;
+}
 
 message ListChatsRequest {
   int32 page_size = 1;
@@ -142,6 +148,15 @@ message SystemNotification {
 }
 
 // --- Core types ---
+
+message Chat {
+  string id = 1;
+  string name = 2;
+  ChatType type = 3;
+  repeated ChatMember members = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
 
 message Message {
   string id = 1;

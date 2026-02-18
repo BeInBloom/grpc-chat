@@ -10,8 +10,6 @@ import (
 	"github.com/BeInBloom/grpc-chat/services/auth/internal/models"
 )
 
-// proto → domain
-
 func toUserID(id string) (uuid.UUID, error) {
 	parsed, err := uuid.Parse(id)
 	if err != nil {
@@ -42,8 +40,6 @@ func toUserUpdate(req *authv1.UpdateRequest, id uuid.UUID) models.User {
 
 	return user
 }
-
-// domain → proto
 
 func toProtoGetResponse(user models.User) *authv1.GetResponse {
 	return &authv1.GetResponse{
